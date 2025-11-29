@@ -1,0 +1,42 @@
+<div class="env-grid-container">
+  <header class="grid-header">
+    <div class="header-content">
+      <h1>Environment Monitor</h1>
+      <div class="stats">
+        <div class="stat working">
+          <span class="stat-number">{{ workingCount }}</span>
+          <span class="stat-label">Operational</span>
+        </div>
+        <div class="stat partial">
+          <span class="stat-number">{{ partialCount }}</span>
+          <span class="stat-label">Degraded</span>
+        </div>
+        <div class="stat down">
+          <span class="stat-number">{{ downCount }}</span>
+          <span class="stat-label">Down</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid-content" *ngIf="!loading">
+    <div class="environments-grid">
+      <app-env-card
+        *ngFor="let env of environments"
+        [environment]="env"
+        (cardClick)="onEnvironmentEdit($event)"
+      >
+      </app-env-card>
+    </div>
+
+    <div class="empty-state" *ngIf="environments.length === 0">
+      <h2>No environments yet</h2>
+      <p>Click "Add Environment" to create your first environment</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading environments...</p>
+  </div>
+</div>

@@ -1,0 +1,180 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>{{ modalTitle }}</h2>
+      <button class="close-btn" (click)="onClose()" type="button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form (ngSubmit)="onSave()">
+        <!-- URL/IP Address -->
+        <div class="form-group">
+          <label for="url">URL / IP Address *</label>
+          <input
+            id="url"
+            type="text"
+            [(ngModel)]="formData.url"
+            name="url"
+            placeholder="e.g., 126.0.202.9, https://example.com"
+            [class.error]="errors['url']"
+          />
+          <span class="error-message" *ngIf="errors['url']">{{
+            errors["url"]
+          }}</span>
+        </div>
+
+        <!-- Environment Name (Optional) -->
+        <div class="form-group">
+          <label for="name">Environment Name</label>
+          <input
+            id="name"
+            type="text"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="e.g., Production API, Staging Database (optional)"
+            [class.error]="errors['name']"
+          />
+          <span class="error-message" *ngIf="errors['name']">{{
+            errors["name"]
+          }}</span>
+        </div>
+
+        <!-- Version (Optional) -->
+        <div class="form-group">
+          <label for="version">Version</label>
+          <input
+            id="version"
+            type="text"
+            [(ngModel)]="formData.version"
+            name="version"
+            placeholder="e.g., v1.2.3, 2024.11.1 (optional)"
+            [class.error]="errors['version']"
+          />
+          <span class="error-message" *ngIf="errors['version']">{{
+            errors["version"]
+          }}</span>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+          <label for="status">Status *</label>
+          <div class="status-select-wrapper">
+            <select
+              id="status"
+              [(ngModel)]="formData.status"
+              name="status"
+              (ngModelChange)="onStatusChange()"
+              [style.borderColor]="currentStatusColor"
+            >
+              <option
+                *ngFor="let option of statusOptions"
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+            <div
+              class="status-indicator"
+              [style.backgroundColor]="currentStatusColor"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Notes (for any status - issues, maintenance, etc.) -->
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea
+            id="notes"
+            [(ngModel)]="formData.notes"
+            name="notes"
+            placeholder="e.g., Database error, Under maintenance, Running slow..."
+            rows="3"
+          ></textarea>
+          <span class="help-text">Add any notes about current status, issues, or updates</span>
+        </div>
+
+        <!-- Environment Info (Edit Mode Only) -->
+        <div class="info-box" *ngIf="isEditMode && environment">
+          <div class="info-item">
+            <span class="info-label">ID:</span>
+            <span class="info-value">{{ environment.id }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Last Updated:</span>
+            <span class="info-value">{{
+              environment.lastUpdated | date : "medium"
+            }}</span>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <div class="footer-left">
+        <button
+          *ngIf="isEditMode && !showDeleteConfirm"
+          type="button"
+          class="btn btn-danger"
+          (click)="onDelete()"
+        >
+          🗑️ Delete
+        </button>
+      </div>
+      <div class="footer-right">
+        <button type="button" class="btn btn-secondary" (click)="onClose()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onSave()">
+          💾 {{ isEditMode ? "Save Changes" : "Create Environment" }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Overlay -->
+    <div class="delete-confirm-overlay" *ngIf="showDeleteConfirm">
+      <div class="delete-confirm-box">
+        <h3>⚠️ Confirm Delete</h3>
+        <p>
+          Are you sure you want to delete
+          <strong>{{ environment?.name }}</strong
+          >?
+        </p>
+        <p class="warning-text">This action cannot be undone.</p>
+        <div class="delete-confirm-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelDelete()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="confirmDelete()"
+          >
+            Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

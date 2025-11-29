@@ -1,0 +1,34 @@
+<div class="env-card" [class]="getStatusClass()" (click)="onCardClick()">
+  <div class="env-card-header">
+    <h3 class="env-name">{{ environment.name }}</h3>
+    <span class="status-badge" [class]="getStatusClass()">
+      {{ getStatusText() }}
+    </span>
+  </div>
+
+  <div class="env-card-body">
+    <div class="env-info">
+      <div class="info-row">
+        <span class="label">Version:</span>
+        <span class="value">{{ environment.version }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Owner:</span>
+        <span class="value">{{ environment.owner }}</span>
+      </div>
+      <div class="info-row" *ngIf="environment.description">
+        <span class="label">Description:</span>
+        <span class="value">{{ environment.description }}</span>
+      </div>
+      <div class="info-row" *ngIf="environment.degradationReason">
+        <span class="label">Issue:</span>
+        <span class="value reason">{{ environment.degradationReason }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="env-card-footer">
+    <span class="updated-by">Updated by {{ environment.updatedBy }}</span>
+    <span class="updated-time">{{ getTimeAgo() }}</span>
+  </div>
+</div>
