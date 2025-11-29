@@ -17,3 +17,4 @@ EXPOSE 4200
 
 # Start Angular dev server (accessible from outside container)
 CMD ["npm", "start", "--", "--host", "0.0.0.0", "--poll", "2000"]
+ 
