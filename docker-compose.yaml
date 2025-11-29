@@ -1,0 +1,52 @@
+services:
+  # Backend Service - Express API with SQLite
+  backend:
+    build:
+      context: ./env-monitor-backend
+      dockerfile: Dockerfile
+    container_name: env-monitor-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source code for hot reload
+      - ./env-monitor-backend/src:/app/src
+      # Persist SQLite database
+      - ./env-monitor-backend/data:/app/data
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    networks:
+      - env-monitor-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Frontend Service - Angular
+  frontend:
+    build:
+      context: ./env-monitor-frontend
+      dockerfile: Dockerfile
+    container_name: env-monitor-frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      # Mount source code for hot reload
+      - ./env-monitor-frontend/src:/app/src
+      # Anonymous volumes for node_modules (prevents host override)
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - env-monitor-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  env-monitor-network:
+    driver: bridge
